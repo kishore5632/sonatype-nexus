@@ -1,7 +1,6 @@
 pipeline {
     agent any
     environment {
-        # Use the hosted repo for uploads, not the group
         PYPI_REPO = "http://localhost:8081/repository/python-hosted/"
         PYPI_CRED = credentials('nexus-username')  // single Jenkins credential
     }
