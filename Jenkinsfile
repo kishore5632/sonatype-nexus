@@ -2,26 +2,17 @@ pipeline {
     agent any
     environment {
         PYPI_REPO = "http://localhost:8081/repository/pypi-group/"
-        PYPI_USER = credentials('nexus-username')
-        PYPI_PASS = credentials('nexus-password')
+        PYPI_CRED = credentials('nexus-username')  // single Jenkins credential
     }
     stages {
-        stage('Setup') {
-            steps {
-                sh 'python3 -m venv venv'
-                sh '. venv/bin/activate'
-                sh 'pip install --upgrade pip setuptools wheel twine'
-            }
-        }
-        stage('Build') {
-            steps {
-                sh 'python setup.py sdist bdist_wheel'
-            }
-        }
-        stage('Publish to Nexus') {
+        stage('Setup, Build & Publish') {
             steps {
                 sh '''
-                    twine upload --repository-url $PYPI_REPO -u $PYPI_USER -p $PYPI_PASS dist/*
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip setuptools wheel twine
+                    python setup.py sdist bdist_wheel
+                    twine upload --repository-url $PYPI_REPO -u $PYPI_CRED_USR -p $PYPI_CRED_PSW dist/*
                 '''
             }
         }
